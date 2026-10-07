@@ -51,6 +51,12 @@ class ServicioJwtTest {
     }
 
     @Test
+    void rechazaElSecretoDeEjemploQueTraeElEnvExample() {
+        assertThatThrownBy(() -> nuevoServicio("CAMBIAR_POR_UN_SECRETO_ALEATORIO_DE_32_BYTES_O_MAS"))
+            .isInstanceOf(IllegalStateException.class).hasMessageContaining("valor de ejemplo");
+    }
+
+    @Test
     void elTokenDeAccesoSeEmiteYSeVerificaConUsuarioYTipo() {
         ServicioJwt.Emitido emitido = jwt.emitirAcceso(42L);
 

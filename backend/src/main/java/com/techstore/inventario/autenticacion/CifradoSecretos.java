@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CifradoSecretos {
     private static final String PREFIJO = "v1:";
+    /** Prefijo de los marcadores de .env.example: una clave que lo conserve es pública. */
+    private static final String VALOR_DE_EJEMPLO = "CAMBIAR";
     private static final int BYTES_IV = 12;
     private static final int BITS_ETIQUETA = 128;
     private static final SecureRandom ALEATORIO = new SecureRandom();
@@ -31,6 +33,10 @@ public class CifradoSecretos {
         String material = propiedades.mfa().claveCifrado();
         if (material == null || material.getBytes(StandardCharsets.UTF_8).length < 32) {
             throw new IllegalStateException("MFA_CLAVE_CIFRADO debe tener al menos 32 bytes UTF-8");
+        }
+        if (material.startsWith(VALOR_DE_EJEMPLO)) {
+            throw new IllegalStateException(
+                "MFA_CLAVE_CIFRADO sigue con el valor de ejemplo de .env.example: genera una propia");
         }
         try {
             byte[] derivada = MessageDigest.getInstance("SHA-256").digest(material.getBytes(StandardCharsets.UTF_8));

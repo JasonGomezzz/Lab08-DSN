@@ -64,6 +64,12 @@ class CifradoSecretosTest {
     }
 
     @Test
+    void rechazaLaClaveDeEjemploQueTraeElEnvExample() {
+        assertThatThrownBy(() -> con("CAMBIAR_POR_OTRO_SECRETO_ALEATORIO_DE_32_BYTES_O_MAS"))
+            .isInstanceOf(IllegalStateException.class).hasMessageContaining("valor de ejemplo");
+    }
+
+    @Test
     void exigeUnaClaveDeAlMenos32Bytes() {
         assertThatThrownBy(() -> con("corta")).isInstanceOf(IllegalStateException.class);
         assertThatThrownBy(() -> con(null)).isInstanceOf(IllegalStateException.class);

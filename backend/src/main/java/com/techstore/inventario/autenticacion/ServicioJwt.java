@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ServicioJwt {
     private static final String CLAIM_TIPO = "tipo";
+    /** Prefijo de los marcadores de .env.example: un secreto que lo conserve es público. */
+    private static final String VALOR_DE_EJEMPLO = "CAMBIAR";
 
     public enum Tipo { ACCESO, MFA }
 
@@ -45,6 +47,9 @@ public class ServicioJwt {
         this.clave = secreto == null ? new byte[0] : secreto.getBytes(StandardCharsets.UTF_8);
         if (clave.length < 32) {
             throw new IllegalStateException("JWT_SECRET debe tener al menos 32 bytes UTF-8");
+        }
+        if (secreto.startsWith(VALOR_DE_EJEMPLO)) {
+            throw new IllegalStateException("JWT_SECRET sigue con el valor de ejemplo de .env.example: genera uno propio");
         }
         this.reloj = reloj;
         this.revocados = revocados;
