@@ -1,0 +1,55 @@
+name: techstore
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: techstore
+      MYSQL_USER: ${DB_USER:?Definir DB_USER en .env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Definir DB_PASSWORD en .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Definir DB_ROOT_PASSWORD en .env}
+    volumes:
+      - datos-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u\"$$MYSQL_USER\" -p\"$$MYSQL_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - interna
+
+  app:
+    build: .
+    image: techstore-inventario
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://db:3306/techstore
+      DB_USER: ${DB_USER:?Definir DB_USER en .env}
+      DB_PASSWORD: ${DB_PASSWORD:?Definir DB_PASSWORD en .env}
+      JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET en .env}
+      MFA_CLAVE_CIFRADO: ${MFA_CLAVE_CIFRADO:?Definir MFA_CLAVE_CIFRADO en .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      TECHSTORE_DATOS_DEMO: ${TECHSTORE_DATOS_DEMO:-false}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      TECHSTORE_BASE_URL: ${TECHSTORE_BASE_URL:-http://localhost:8080}
+      TECHSTORE_FRONTEND_URL: ${TECHSTORE_FRONTEND_URL:-http://localhost:8080}
+    ports:
+      - "8080:8080"
+    networks:
+      - interna
+
+volumes:
+  datos-mysql:
+
+networks:
+  interna:
