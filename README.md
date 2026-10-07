@@ -75,7 +75,7 @@ npm run dev                 # http://localhost:5173
 
 ## Configuración
 
-Todas las variables están en [`.env.example`](.env.example) con valores de mentira; el `.env` real no se versiona. Genera secretos con `openssl rand -base64 48`.
+Todas las variables están en [`.env.example`](.env.example) con valores de mentira; el `.env` real no se versiona. Genera secretos con `openssl rand -base64 48`. La aplicación se niega a arrancar si `JWT_SECRET` o `MFA_CLAVE_CIFRADO` conservan el marcador `CAMBIAR…` del ejemplo.
 
 | Variable | Para qué sirve |
 |---|---|
@@ -163,7 +163,7 @@ Pantallas de la interfaz: `/login`, `/registro`, `/mfa`, `/tienda`, `/inventario
 ## Cómo probar
 
 ```bash
-cd backend && ./mvnw test        # 179 pruebas; requieren Docker
+cd backend && ./mvnw test        # más de 180 pruebas; requieren Docker
 cd frontend && npm run build     # comprueba los tipos y compila la interfaz
 docker compose config -q         # valida el compose
 ```
