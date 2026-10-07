@@ -113,42 +113,6 @@ backend/                      Spring Boot 3.5 · Java 21 · Maven
 frontend/                     React 19 · Vite · Tailwind 4 · TypeScript
 Dockerfile · docker-compose.yml
 ```
-
-## Perfiles y permisos
-
-| Operación | Administrador | Gerente de tienda | Empleado de ventas | Auditor |
-|---|:-:|:-:|:-:|:-:|
-| Ver productos | todas las tiendas | su tienda | su tienda | todas las tiendas |
-| Crear productos | sí | su tienda | no | no |
-| Editar datos y precio | sí | su tienda | no | no |
-| Actualizar stock | sí | su tienda | su tienda | no |
-| Eliminar productos | sí | su tienda | no | no |
-| Reporte de inventario | todas | su tienda | no | todas |
-| Ver usuarios | sí | no | no | sí |
-| Cambiar roles, tiendas, desbloquear, reiniciar MFA | sí | no | no | no |
-
-## API
-
-| Método y ruta | Acceso |
-|---|---|
-| `POST /api/auth/registro` | público |
-| `POST /api/auth/login` | público |
-| `POST /api/auth/mfa/enrolar`, `POST /api/auth/mfa/verificar` | token MFA parcial |
-| `POST /api/auth/logout`, `GET /api/auth/me`, `PUT /api/auth/me/tienda` | sesión completa |
-| `GET /api/auth/proveedores`, `GET /api/tiendas`, `GET /api/actuator/health` | público |
-| `GET /api/productos[?tiendaId=]`, `GET /api/productos/{id}` | `VER_PRODUCTOS` |
-| `POST /api/productos` | `CREAR_PRODUCTO` |
-| `PUT /api/productos/{id}` | `EDITAR_PRODUCTO` |
-| `PATCH /api/productos/{id}/stock` (cuerpo `{"ajuste": -1}`) | `ACTUALIZAR_STOCK` |
-| `DELETE /api/productos/{id}` | `ELIMINAR_PRODUCTO` |
-| `GET /api/reportes/inventario` | `VER_REPORTE` |
-| `GET /api/usuarios` | `VER_USUARIOS` |
-| `PATCH /api/usuarios/{id}/rol`, `PATCH /api/usuarios/{id}/tienda`, `POST /api/usuarios/{id}/desbloquear`, `POST /api/usuarios/{id}/reiniciar-mfa` | `GESTIONAR_USUARIOS` |
-
-Los errores usan `application/problem+json` con un campo `codigo` estable (`CREDENCIALES_INVALIDAS`, `CUENTA_BLOQUEADA`, `MFA_CODIGO_INVALIDO`, `MFA_INTENTOS_AGOTADOS`, `TIENDA_AJENA`, `ROL_SIN_PERMISO`, etc.).
-
-Pantallas de la interfaz: `/login`, `/registro`, `/mfa`, `/tienda`, `/inventario`, `/reportes`, `/usuarios`.
-
 ## Decisiones de seguridad
 
 - Contraseñas con **BCrypt** (coste 12); la política (8 a 64 caracteres, mayúscula, número y carácter especial) se valida en el servidor. Nunca se devuelve un hash.
@@ -172,18 +136,3 @@ Las pruebas del backend arrancan un MySQL real y cubren registro, política de c
 
 Para probar el segundo factor a mano, escanea el QR de `/mfa` con Google Authenticator, o calcula el código a partir de la clave que se muestra bajo el QR con cualquier generador TOTP (SHA-1, 6 dígitos, 30 s).
 
-## Desviaciones y supuestos respecto al enunciado
-
-- **Pila tecnológica:** el enunciado no la fija; se usó la misma de los laboratorios anteriores del curso (Spring Boot, MySQL, React, Docker).
-- **Inventario mínimo:** el enunciado solo detalla autenticación, pero describe cuatro perfiles con restricciones sobre productos. Se implementó un inventario básico (productos por tienda, stock, precio, reporte) para que esas reglas se puedan demostrar.
-- **Duración del bloqueo:** el enunciado fija 5 intentos pero no cuánto dura; se eligió 15 minutos, con desbloqueo manual por un administrador.
-- **Rol al registrarse:** el registro público siempre crea un *Empleado de ventas*; los demás perfiles los asigna un administrador (el administrador inicial sale de variables de entorno).
-- **Login social y MFA:** las cuentas de Google y GitHub también pasan por el código TOTP. Entran sin tienda y la eligen una sola vez en `/tienda`.
-- **Sin fusión de cuentas:** una cuenta social nunca se une a una cuenta local con el mismo correo, porque el registro con contraseña no verifica el correo y la fusión permitiría adueñarse de una cuenta ajena. En ese caso se pide entrar con la contraseña.
-- **Correo de GitHub:** se toma solo de `/user/emails` (principal y verificado), no del perfil público.
-- **Moneda:** los importes se muestran en soles (S/); el enunciado no indica moneda.
-- **Alcance no incluido:** despliegue en AWS, recuperación de contraseña, envío de correos y límite de peticiones por IP.
-
-## Repositorio
-
-<https://github.com/JasonGomezzz/Lab08-DSN>
