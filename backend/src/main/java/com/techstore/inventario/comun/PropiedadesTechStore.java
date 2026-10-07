@@ -4,7 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** Configuración propia de la aplicación, enlazada al prefijo {@code techstore} de application.yml. */
 @ConfigurationProperties(prefix = "techstore")
-public record PropiedadesTechStore(Jwt jwt, Seguridad seguridad, Mfa mfa, Urls urls, Oauth2 oauth2) {
+public record PropiedadesTechStore(Jwt jwt, Seguridad seguridad, Mfa mfa, Urls urls, Oauth2 oauth2, Admin admin,
+                                   Demo demo) {
 
     public record Jwt(String secreto, int expiracionMinutos, int expiracionMfaMinutos) {
     }
@@ -20,6 +21,14 @@ public record PropiedadesTechStore(Jwt jwt, Seguridad seguridad, Mfa mfa, Urls u
     }
 
     public record Oauth2(Proveedor google, Proveedor github, String githubCorreosUri) {
+    }
+
+    /** Administrador inicial; sin correo y contraseña no se crea ninguno. */
+    public record Admin(String email, String password) {
+    }
+
+    /** Usuarios por perfil y productos de ejemplo para probar el sistema; solo para desarrollo local. */
+    public record Demo(boolean activo, String password) {
     }
 
     public record Proveedor(String clientId, String clientSecret) {

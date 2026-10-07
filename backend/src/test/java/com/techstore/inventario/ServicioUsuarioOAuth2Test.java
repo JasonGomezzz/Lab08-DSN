@@ -25,7 +25,7 @@ class ServicioUsuarioOAuth2Test {
         RestClient.Builder constructor = RestClient.builder();
         servidor = MockRestServiceServer.bindTo(constructor).build();
         servicio = new ServicioUsuarioOAuth2(constructor, new PropiedadesTechStore(null, null, null, null,
-            new PropiedadesTechStore.Oauth2(null, null, URL)));
+            new PropiedadesTechStore.Oauth2(null, null, URL), null, null));
     }
 
     @Test

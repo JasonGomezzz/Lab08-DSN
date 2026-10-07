@@ -51,3 +51,9 @@ techstore:
       client-id: ${GITHUB_CLIENT_ID:}
       client-secret: ${GITHUB_CLIENT_SECRET:}
     github-correos-uri: https://api.github.com/user/emails
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+  demo:
+    activo: ${TECHSTORE_DATOS_DEMO:false}
+    password: ${DEMO_PASSWORD:}
