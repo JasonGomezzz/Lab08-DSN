@@ -1,0 +1,26 @@
+# Entorno local y secretos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Java / Maven
+**/target/
+
+# Node / Vite
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Interfaz compilada que copia el Dockerfile dentro del jar
+backend/src/main/resources/static/
+
+# Editor y sistema operativo
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+*.iml
+coverage/
