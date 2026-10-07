@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import com.techstore.inventario.autorizacion.PoliticaAcceso;
 import com.techstore.inventario.usuarios.PerfilDto;
+import com.techstore.inventario.usuarios.ServicioUsuarios;
 import com.techstore.inventario.usuarios.Usuario;
 import com.techstore.inventario.usuarios.UsuarioDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,13 +31,16 @@ public class AuthController {
     private final ServicioAutenticacion autenticacion;
     private final ObjectProvider<ClientRegistrationRepository> proveedores;
     private final PoliticaAcceso politica;
+    private final ServicioUsuarios servicioUsuarios;
 
     public AuthController(ServicioRegistro registro, ServicioAutenticacion autenticacion,
-                          ObjectProvider<ClientRegistrationRepository> proveedores, PoliticaAcceso politica) {
+                          ObjectProvider<ClientRegistrationRepository> proveedores, PoliticaAcceso politica,
+                          ServicioUsuarios servicioUsuarios) {
         this.registro = registro;
         this.autenticacion = autenticacion;
         this.proveedores = proveedores;
         this.politica = politica;
+        this.servicioUsuarios = servicioUsuarios;
     }
 
     /** Proveedores sociales con credenciales: la interfaz solo muestra los botones de estos. */
@@ -81,6 +87,16 @@ public class AuthController {
     @GetMapping("/me")
     public PerfilDto me(@AuthenticationPrincipal Usuario usuario) {
         return PerfilDto.de(usuario, politica.permisosDe(usuario.getRol()));
+    }
+
+    /** Para quien entró con Google o GitHub y aún no tiene tienda; solo se puede hacer una vez. */
+    @PutMapping("/me/tienda")
+    public PerfilDto elegirTienda(@AuthenticationPrincipal Usuario usuario, @Valid @RequestBody ElegirTienda datos) {
+        Usuario actualizado = servicioUsuarios.elegirTiendaPropia(usuario, datos.tiendaId());
+        return PerfilDto.de(actualizado, politica.permisosDe(actualizado.getRol()));
+    }
+
+    public record ElegirTienda(@NotNull(message = "La tienda es obligatoria") Long tiendaId) {
     }
 
     public record Credenciales(
