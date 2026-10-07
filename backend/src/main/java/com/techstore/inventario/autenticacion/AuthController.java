@@ -1,13 +1,18 @@
 package com.techstore.inventario.autenticacion;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.techstore.inventario.usuarios.Usuario;
 import com.techstore.inventario.usuarios.UsuarioDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +24,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final ServicioRegistro registro;
     private final ServicioAutenticacion autenticacion;
+    private final ObjectProvider<ClientRegistrationRepository> proveedores;
 
-    public AuthController(ServicioRegistro registro, ServicioAutenticacion autenticacion) {
+    public AuthController(ServicioRegistro registro, ServicioAutenticacion autenticacion,
+                          ObjectProvider<ClientRegistrationRepository> proveedores) {
         this.registro = registro;
         this.autenticacion = autenticacion;
+        this.proveedores = proveedores;
+    }
+
+    /** Proveedores sociales con credenciales: la interfaz solo muestra los botones de estos. */
+    @GetMapping("/proveedores")
+    public List<String> proveedoresSociales() {
+        List<String> habilitados = new ArrayList<>();
+        if (proveedores.getIfAvailable() instanceof Iterable<?> registros) {
+            for (Object registro : registros) {
+                habilitados.add(((ClientRegistration) registro).getRegistrationId());
+            }
+        }
+        habilitados.sort(String::compareTo);
+        return habilitados;
     }
 
     @PostMapping("/registro")

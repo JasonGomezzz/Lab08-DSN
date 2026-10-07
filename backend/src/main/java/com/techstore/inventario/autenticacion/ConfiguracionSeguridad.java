@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techstore.inventario.comun.PropiedadesTechStore;
 import com.techstore.inventario.usuarios.UsuarioRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -30,7 +32,9 @@ public class ConfiguracionSeguridad {
 
     @Bean
     SecurityFilterChain seguridad(HttpSecurity http, ServicioJwt jwt, UsuarioRepository usuarios,
-                                  ObjectMapper json) throws Exception {
+                                  ObjectMapper json, ObjectProvider<ClientRegistrationRepository> proveedores,
+                                  ServicioUsuarioOAuth2 usuarioOAuth2, ManejadorExitoOAuth2 exito,
+                                  ManejadorFalloOAuth2 fallo) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
@@ -54,6 +58,14 @@ public class ConfiguracionSeguridad {
                         "El token no permite esta operación; completa el inicio de sesión primero",
                         "TOKEN_NO_PERMITIDO"))))
             .addFilterBefore(new FiltroJwt(jwt, usuarios), UsernamePasswordAuthenticationFilter.class);
+        if (proveedores.getIfAvailable() != null) {
+            // "/login" es la pantalla de la interfaz; oauth2Login solo aporta /oauth2/authorization/* y el callback.
+            http.oauth2Login(oauth -> oauth
+                .loginPage("/login")
+                .userInfoEndpoint(info -> info.userService(usuarioOAuth2))
+                .successHandler(exito)
+                .failureHandler(fallo));
+        }
         return http.build();
     }
 

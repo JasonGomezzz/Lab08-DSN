@@ -179,6 +179,14 @@ class LoginTest extends PruebaIntegracion {
     }
 
     @Test
+    void sinCredencialesDeProveedoresNoSeOfreceLoginSocial() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/auth/proveedores"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(0));
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/oauth2/authorization/google"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     void laRespuestaDeLoginNuncaIncluyeHashNiSecretos() throws Exception {
         Usuario usuario = usuario();
 
