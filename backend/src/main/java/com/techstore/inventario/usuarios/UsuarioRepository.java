@@ -28,4 +28,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from Usuario u where u.email = :email")
     Optional<Usuario> buscarParaAutenticar(@Param("email") String email);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from Usuario u where u.id = :id")
+    Optional<Usuario> bloquearPorId(@Param("id") Long id);
 }
