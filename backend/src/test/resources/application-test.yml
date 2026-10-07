@@ -2,3 +2,11 @@ logging:
   level:
     root: WARN
     com.techstore: INFO
+
+techstore:
+  jwt:
+    secreto: clave_de_prueba_con_mas_de_32_bytes_para_jwt_0123456789
+  seguridad:
+    bcrypt-costo: 4
+  mfa:
+    clave-cifrado: otra_clave_de_prueba_con_mas_de_32_bytes_para_mfa_0123456789

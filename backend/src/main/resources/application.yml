@@ -26,3 +26,17 @@ management:
     health:
       probes:
         enabled: true
+
+techstore:
+  jwt:
+    secreto: ${JWT_SECRET:}
+    expiracion-minutos: 60
+    expiracion-mfa-minutos: 5
+  seguridad:
+    intentos-maximos-login: 5
+    bloqueo-minutos: 15
+    intentos-maximos-mfa: 3
+    bcrypt-costo: 12
+  mfa:
+    clave-cifrado: ${MFA_CLAVE_CIFRADO:}
+    emisor: TechStore
