@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+!.env.example
+**/node_modules
+**/dist
+**/target
+**/.idea
+**/.vscode
+**/*.log
+PRODUCT.md
+DESIGN.md
+.impeccable
