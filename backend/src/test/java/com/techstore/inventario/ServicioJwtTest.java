@@ -39,7 +39,7 @@ class ServicioJwtTest {
 
     private ServicioJwt nuevoServicio(String secreto) {
         PropiedadesTechStore propiedades = new PropiedadesTechStore(
-            new PropiedadesTechStore.Jwt(secreto, 60, 5), null, null);
+            new PropiedadesTechStore.Jwt(secreto, 60, 5), null, null, null, null);
         return new ServicioJwt(propiedades, reloj, revocados);
     }
 

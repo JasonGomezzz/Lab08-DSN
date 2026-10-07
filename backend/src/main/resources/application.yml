@@ -40,3 +40,14 @@ techstore:
   mfa:
     clave-cifrado: ${MFA_CLAVE_CIFRADO:}
     emisor: TechStore
+  urls:
+    base: ${TECHSTORE_BASE_URL:http://localhost:8080}
+    interfaz: ${TECHSTORE_FRONTEND_URL:http://localhost:8080}
+  oauth2:
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:}
+      client-secret: ${GOOGLE_CLIENT_SECRET:}
+    github:
+      client-id: ${GITHUB_CLIENT_ID:}
+      client-secret: ${GITHUB_CLIENT_SECRET:}
+    github-correos-uri: https://api.github.com/user/emails

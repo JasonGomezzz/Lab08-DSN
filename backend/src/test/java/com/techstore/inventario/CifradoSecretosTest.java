@@ -11,7 +11,7 @@ class CifradoSecretosTest {
     private static final String CLAVE = "clave_de_cifrado_de_prueba_con_mas_de_32_bytes";
 
     private CifradoSecretos con(String clave) {
-        return new CifradoSecretos(new PropiedadesTechStore(null, null, new PropiedadesTechStore.Mfa(clave, "TechStore")));
+        return new CifradoSecretos(new PropiedadesTechStore(null, null, new PropiedadesTechStore.Mfa(clave, "TechStore"), null, null));
     }
 
     @Test
