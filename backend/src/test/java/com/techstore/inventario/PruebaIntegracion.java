@@ -2,6 +2,7 @@ package com.techstore.inventario;
 
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -13,6 +14,7 @@ import org.testcontainers.containers.MySQLContainer;
  * para que el contexto de Spring se reutilice y las pruebas no arranquen un contenedor cada una.
  */
 @SpringBootTest
+@Import(ConfiguracionPruebas.class)
 @ActiveProfiles("test")
 @EnabledIf("dockerDisponible")
 public abstract class PruebaIntegracion {
