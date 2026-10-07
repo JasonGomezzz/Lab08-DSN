@@ -2,6 +2,8 @@ package com.techstore.inventario.autenticacion;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.techstore.inventario.autorizacion.PoliticaAcceso;
+import com.techstore.inventario.usuarios.PerfilDto;
 import com.techstore.inventario.usuarios.Usuario;
 import com.techstore.inventario.usuarios.UsuarioDto;
 import jakarta.validation.Valid;
@@ -25,12 +27,14 @@ public class AuthController {
     private final ServicioRegistro registro;
     private final ServicioAutenticacion autenticacion;
     private final ObjectProvider<ClientRegistrationRepository> proveedores;
+    private final PoliticaAcceso politica;
 
     public AuthController(ServicioRegistro registro, ServicioAutenticacion autenticacion,
-                          ObjectProvider<ClientRegistrationRepository> proveedores) {
+                          ObjectProvider<ClientRegistrationRepository> proveedores, PoliticaAcceso politica) {
         this.registro = registro;
         this.autenticacion = autenticacion;
         this.proveedores = proveedores;
+        this.politica = politica;
     }
 
     /** Proveedores sociales con credenciales: la interfaz solo muestra los botones de estos. */
@@ -75,8 +79,8 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public UsuarioDto me(@AuthenticationPrincipal Usuario usuario) {
-        return UsuarioDto.de(usuario);
+    public PerfilDto me(@AuthenticationPrincipal Usuario usuario) {
+        return PerfilDto.de(usuario, politica.permisosDe(usuario.getRol()));
     }
 
     public record Credenciales(
